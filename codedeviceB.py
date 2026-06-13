@@ -1,0 +1,62 @@
+import json
+import threading
+import paho.mqtt.client as mqtt
+from gtts import gTTS
+import os
+import platform
+
+# === Configuration ===
+MQTT_BROKER = "127.0.0.1"
+MQTT_PORT = 1883
+MQTT_TOPIC = "smarttimer/deviceB"
+
+# === Chức năng Phát giọng nói ===
+def say_french(text):
+    print(f"Device B Speaking (FR): {text}")
+    try:
+        tts = gTTS(text=text, lang='fr')
+        filename = "temp_fr.mp3"
+        tts.save(filename)
+        
+        # Lệnh phát âm thanh phụ thuộc vào Hệ Điều Hành
+        sys_os = platform.system()
+        if sys_os == "Windows":
+            os.system(f"start {filename}")
+        elif sys_os == "Darwin": # macOS
+            os.system(f"afplay {filename}")
+        else: # Linux / Raspberry Pi
+            os.system(f"mpg321 {filename} || mplayer {filename}")
+    except Exception as e:
+        print(f"TTS Error: {e}")
+
+def announce_timer_fr():
+    say_french("Le temps est écoulé pour votre minuterie.")
+
+# === Xử lý tin nhắn MQTT ===
+def on_message(client, userdata, msg):
+    try:
+        payload = json.loads(msg.payload.decode())
+        text_fr = payload.get("speech", "")
+        seconds = payload.get("seconds", 0)
+
+        if text_fr:
+            say_french(text_fr)
+
+        if seconds > 0:
+            threading.Timer(seconds, announce_timer_fr).start()
+            print(f"Timer set for {seconds} seconds on Device B.")
+            
+    except Exception as e:
+        print(f"Message parsing error: {e}")
+
+# === Thiết lập MQTT Client ===
+mqtt_client = mqtt.Client(client_id="DeviceB")
+mqtt_client.on_message = on_message
+
+try:
+    mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+    mqtt_client.subscribe(MQTT_TOPIC)
+    print("Device B is running. Waiting for messages from Device A...")
+    mqtt_client.loop_forever()
+except Exception as e:
+    print(f"Failed to connect to MQTT broker. Is Mosquitto running? Error: {e}")
