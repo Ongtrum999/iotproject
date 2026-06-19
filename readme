@@ -1,3 +1,21 @@
-uvicorn local_api:app --port 7071
-python codedeviceB.py
-python codedeviceA.py
+1. Installation
+Device A: "pip install fastapi uvicorn pydantic speechrecognition pyttsx3 paho-mqtt 
+deep-translator requests"
+Device B: "pip install paho-mqtt gTTS"
+
+2. Download "Eclipse Mosquitto" on device A
+
+3. Go to Services -> Find "Mosquitto Broker" -> right-click on it and choose stop
+
+4. Open a new terminal in device A and then input "mosquitto -c mosquitto.conf -v"
+
+5. On device A, open the Command Promt and input "ipconfig", ( "ifconfig" if on Mac/Linux ), find 
+the IPv4 Address and then copy it.
+
+6. Open the codedeviceB.py on device B and replace MQTT_BROKER = "IP_ADDRESS" with IP_ADDRESS is 
+the IPv4 address in step 4
+
+7. On device A, open the terminal and enter "uvicorn local_api:app --port 7071", open another 
+terminal and enter "python codedeviceA.py"
+
+8. Open the terminal on device B and enter "python codedeviceB.py"
