@@ -1,0 +1,3 @@
+uvicorn local_api:app --port 7071
+python codedeviceB.py
+python codedeviceA.py

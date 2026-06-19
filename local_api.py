@@ -11,8 +11,7 @@ class TimerRequest(BaseModel):
 def parse_time(req: TimerRequest):
     text = req.text.lower()
     seconds = 0
-    
-    # Logic bóc tách số phút và giây từ câu nói tiếng Anh
+
     match_min = re.search(r'(\d+)\s*minute', text)
     match_sec = re.search(r'(\d+)\s*second', text)
     

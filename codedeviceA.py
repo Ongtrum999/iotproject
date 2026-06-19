@@ -6,31 +6,29 @@ import pyttsx3
 import paho.mqtt.client as mqtt
 from deep_translator import GoogleTranslator
 
-# === Configuration ===
-MQTT_BROKER = "127.0.0.1" # Thay bằng IP LAN nếu 2 thiết bị nằm trên 2 máy tính khác nhau
+# Configuration 
+MQTT_BROKER = "127.0.0.1" # Replace with your device B's IP address if on a different machine
 MQTT_PORT = 1883
 MQTT_TOPIC = "smarttimer/deviceB"
 LOCAL_API_URL = "http://localhost:7071/parse_time"
 
-# Đoạn code mới đã fix cảnh báo:
 mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id="DeviceA")
 mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
 mqtt_client.loop_start()
 
-# === Khởi tạo Text-to-Speech (Tiếng Anh - Offline) ===
+# Text-to-Speech
 engine = pyttsx3.init()
-engine.setProperty('rate', 150) # Tốc độ đọc
+engine.setProperty('rate', 150) 
 
 def say(text):
     print(f"Device A Speaking: {text}")
     engine.say(text)
     engine.runAndWait()
 
-# === Chức năng Dịch & Logic ===
+# Translate function
 def translate_text(text):
     try:
-        # Dịch từ Anh sang Pháp miễn phí
-        return GoogleTranslator(source='en', target='fr').translate(text)
+        return GoogleTranslator(source='en', target='vi').translate(text)
     except Exception as e:
         print(f"Translation error: {e}")
         return text
@@ -73,7 +71,6 @@ def process_text(text):
     if seconds > 0:
         create_timer(seconds)
 
-# === Vòng lặp Nhận diện giọng nói ===
 r = sr.Recognizer()
 mic = sr.Microphone()
 
@@ -82,14 +79,12 @@ with mic as source:
     r.adjust_for_ambient_noise(source)
     while True:
         try:
-            # Nghe tối đa 5 giây cho mỗi câu lệnh
             audio = r.listen(source, phrase_time_limit=5)
             print("Processing audio...")
-            # Sử dụng Google Web Speech API miễn phí (Có thể đổi sang Whisper cục bộ sau)
             text = r.recognize_google(audio) 
             threading.Thread(target=process_text, args=(text,), daemon=True).start()
         except sr.UnknownValueError:
-            pass # Bỏ qua nếu không nghe rõ
+            pass 
         except KeyboardInterrupt:
             print("\nShutting down Device A.")
             break

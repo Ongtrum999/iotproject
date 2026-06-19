@@ -5,51 +5,50 @@ from gtts import gTTS
 import os
 import platform
 
-# === Configuration ===
+# Configuration
 MQTT_BROKER = "127.0.0.1"
 MQTT_PORT = 1883
 MQTT_TOPIC = "smarttimer/deviceB"
 
-# === Chức năng Phát giọng nói ===
-def say_french(text):
-    print(f"Device B Speaking (FR): {text}")
+# Speak function 
+def say_vietnamese(text):
+    print(f"Device B Speaking (VI): {text}")
     try:
-        tts = gTTS(text=text, lang='fr')
-        filename = "temp_fr.mp3"
+        tts = gTTS(text=text, lang='vi')
+        filename = "temp_vi.mp3"
         tts.save(filename)
-        
-        # Lệnh phát âm thanh phụ thuộc vào Hệ Điều Hành
+
         sys_os = platform.system()
         if sys_os == "Windows":
             os.system(f"start {filename}")
-        elif sys_os == "Darwin": # macOS
+        elif sys_os == "Darwin": 
             os.system(f"afplay {filename}")
-        else: # Linux / Raspberry Pi
+        else: 
             os.system(f"mpg321 {filename} || mplayer {filename}")
     except Exception as e:
         print(f"TTS Error: {e}")
 
-def announce_timer_fr():
-    say_french("Le temps est écoulé pour votre minuterie.")
+def announce_timer_vi():
+    say_vietnamese("Thời gian của bạn đã hết.")
 
-# === Xử lý tin nhắn MQTT ===
+# MQTT Callback
 def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload.decode())
-        text_fr = payload.get("speech", "")
+        text_vi = payload.get("speech", "")
         seconds = payload.get("seconds", 0)
 
-        if text_fr:
-            say_french(text_fr)
+        if text_vi:
+            say_vietnamese(text_vi)
 
         if seconds > 0:
-            threading.Timer(seconds, announce_timer_fr).start()
+            threading.Timer(seconds, announce_timer_vi).start()
             print(f"Timer set for {seconds} seconds on Device B.")
             
     except Exception as e:
         print(f"Message parsing error: {e}")
 
-# === Thiết lập MQTT Client ===
+# Initialize MQTT Client
 mqtt_client = mqtt.Client(client_id="DeviceB")
 mqtt_client.on_message = on_message
 

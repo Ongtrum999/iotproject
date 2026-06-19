@@ -19,3 +19,4 @@ the IPv4 address in step 4
 terminal and enter "python codedeviceA.py"
 
 8. Open the terminal on device B and enter "python codedeviceB.py"
+
