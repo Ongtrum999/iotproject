@@ -6,7 +6,7 @@ import os
 import platform
 
 # Configuration
-MQTT_BROKER = "127.0.0.1"
+MQTT_BROKER = "broker.emqx.io"
 MQTT_PORT = 1883
 MQTT_TOPIC = "smarttimer/deviceB"
 

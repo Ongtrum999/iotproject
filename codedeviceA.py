@@ -7,7 +7,7 @@ import paho.mqtt.client as mqtt
 from deep_translator import GoogleTranslator
 
 # Configuration 
-MQTT_BROKER = "127.0.0.1" # Replace with your device B's IP address if on a different machine
+MQTT_BROKER = "broker.emqx.io" # Replace with your device B's IP address if on a different machine
 MQTT_PORT = 1883
 MQTT_TOPIC = "smarttimer/deviceB"
 LOCAL_API_URL = "http://localhost:7071/parse_time"
